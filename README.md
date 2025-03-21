@@ -1,2 +1,3 @@
 # neo4j-genkit
-Genkit Plugin for Neo4j
+
+This is a Genkit Plugin for Neo4j.
