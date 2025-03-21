@@ -17,11 +17,14 @@
 import { Neo4jVectorStore } from './vector';
 import { Document, defineRetriever } from '@genkit-ai/ai/retriever';
 import { Neo4jRetrieverOptionsSchema } from './index'
+import { Genkit } from 'genkit';
 
 /**
  * Configures a Neo4j retriever.
  */
-export function configureNeo4jRetriever(params: {
+export function configureNeo4jRetriever(  
+  ai: Genkit,
+  params: {
   neo4jStore: Neo4jVectorStore;
   indexId: string;
 }) {
@@ -30,7 +33,7 @@ export function configureNeo4jRetriever(params: {
   };
   const neo4jStore = params.neo4jStore;
 
-  return defineRetriever(
+  return ai.defineRetriever(
     {
       name: `neo4j/${indexId}`,
       configSchema: Neo4jRetrieverOptionsSchema,

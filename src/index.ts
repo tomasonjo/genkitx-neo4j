@@ -21,11 +21,12 @@ import {
   indexerRef,
   retrieverRef,
 } from '@genkit-ai/ai/retriever';
-import { genkitPlugin, PluginProvider } from '@genkit-ai/core';
+import { genkitPlugin, PluginProvider } from 'genkit/plugin';
 import { configureNeo4jIndexer } from './indexer';
 import { configureNeo4jRetriever } from './retriever';
 import * as z from 'zod';
 import { Neo4jVectorStore } from './vector';
+import { Genkit } from 'genkit';
 
 /**
  * Neo4j plugin for indexing and retrieval
@@ -40,16 +41,18 @@ export function neo4j<EmbedderCustomOptions extends z.ZodTypeAny>(
 ): PluginProvider {
   const plugin = genkitPlugin(
     'neo4j',
-    async (
+    async (ai:Genkit)=>{
       params: {
         clientParams: Neo4jGraphConfig;
         indexId: string;
         embedder: EmbedderArgument<EmbedderCustomOptions>;
         embedderOptions?: z.infer<EmbedderCustomOptions>;
       }[]
-    ) => ({
+    } => ({
       retrievers: await Promise.all(params.map(async (i) => {
-        return configureNeo4jRetriever({
+        return configureNeo4jRetriever(
+          ai,
+          {
           neo4jStore: await Neo4jVectorStore.create(
             i.clientParams, i.embedder, i.embedderOptions),
           indexId: i.indexId

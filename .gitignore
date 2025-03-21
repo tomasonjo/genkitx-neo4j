@@ -1,0 +1,5 @@
+#should build in lib.  to fix
+src/*.js
+
+package-lock.json
+node_modules
