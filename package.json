@@ -13,8 +13,8 @@
     "genai",
     "generative-ai"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Neo4j",
+  "license": "Apache-2.0",
   "description": "Genkit AI framework plugin for Neo4j Graph database",
   "type": "commonjs",
   "scripts": {
@@ -26,8 +26,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/firebase/genkit.git",
-    "directory": "js/plugins/neo4j"
+    "url": "https://github.com/neo4j-partners/genkitx-neo4j.git",
+    "directory": "./"
   },
   "dependencies": {
     "neo4j-driver": "^5.26.0",
