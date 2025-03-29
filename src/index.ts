@@ -237,23 +237,33 @@ export function configureNeo4jIndexer<
           }),
         ),
       );
-      let params = docs.map((el, i) => ({
-        text: el.content[0]["text"],
-        metadata: el.content[0]["metadata"] ?? {},
-        embedding: embeddings[i][0]["embedding"],
-      }));
-      await neo4j_instance.executeQuery(
-        `
-        UNWIND $data AS row
-        CREATE (t:\`${indexId}\`)
-        SET t.text = row.text,
-            t += row.metadata
-        WITH t, row.embedding AS embedding
-        CALL db.create.setNodeVectorProperty(t, 'embedding', embedding)
-        `,
-        { data: params },
-        { database: neo4jConfig.database },
-      );
+
+      const BATCH_SIZE = 1000;
+
+      for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+        const batchDocs = docs.slice(i, i + BATCH_SIZE);
+        const batchEmbeddings = embeddings.slice(i, i + BATCH_SIZE);
+
+        const batchParams = batchDocs.map((el, j) => ({
+          text: el.content[0]["text"],
+          metadata: el.content[0]["metadata"] ?? {},
+          embedding: batchEmbeddings[j][0]["embedding"],
+        }));
+
+        await neo4j_instance.executeQuery(
+          `
+          UNWIND $data AS row
+          CREATE (t:\`${indexId}\`)
+          SET t.text = row.text,
+              t += row.metadata
+          WITH t, row.embedding AS embedding
+          CALL db.create.setNodeVectorProperty(t, 'embedding', embedding)
+          `,
+          { data: batchParams },
+          { database: neo4jConfig.database },
+        );
+      }
+
       await neo4j_instance.executeQuery(
         `
         CREATE VECTOR INDEX $indexName IF NOT EXISTS
@@ -278,7 +288,7 @@ function getDefaultConfig() {
   if (!url || !username || !password) {
     throw new Error(
       "Please provide Neo4j connection details through environment variables: NEO4J_URI, NEO4J_USERNAME, and NEO4J_PASSWORD are required.\n" +
-        "For more details see https://neo4j.com/docs/api/javascript-driver/current/",
+      "For more details see https://neo4j.com/docs/api/javascript-driver/current/",
     );
   }
 
