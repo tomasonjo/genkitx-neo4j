@@ -25,7 +25,6 @@ import {
   indexerRef,
   retrieverRef,
 } from "genkit/retriever";
-import { Md5 } from "ts-md5";
 
 const Neo4jRetrieverOptionsSchema = CommonRetrieverOptionsSchema.extend({
   k: z.number().max(1000),
@@ -42,8 +41,6 @@ export interface Neo4jGraphConfig {
   password: string;
   database?: string;
 }
-
-const CONTENT_KEY = "text";
 
 /**
  * neo4jRetrieverRef function creates a retriever for Neo4j.
@@ -83,7 +80,7 @@ export const neo4jIndexerRef = (params: {
     info: {
       label: params.displayName ?? `Neo4j - ${params.indexId}`,
     },
-    //configSchema: PineconeIndexerOptionsSchema.optional(),
+    //configSchema: Neo4jIndexerOptionsSchema.optional(),
   });
 };
 
@@ -246,7 +243,7 @@ export function configureNeo4jIndexer<
 
         const batchParams = batchDocs.map((el, j) => ({
           text: el.content[0]["text"],
-          metadata: el.content[0]["metadata"] ?? {},
+          metadata: el.metadata ?? {},
           embedding: batchEmbeddings[j][0]["embedding"],
         }));
 
