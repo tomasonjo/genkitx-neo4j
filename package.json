@@ -32,7 +32,6 @@
     "directory": "./"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
     "neo4j-driver": "^5.26.0",
     "uuid": "^10.0.0",
     "zod": "^3.22.4"
